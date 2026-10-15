@@ -5,7 +5,7 @@
 import pandas as pd
 
 # 1. Load the dataset
-df = pd.read_csv('anime.csv')
+df = pd.read_csv('animes.csv')
 
 print('Dataset Successfully Loaded')
 print(f'Total Anime Records: {df.shape[0]}')
