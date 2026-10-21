@@ -28,11 +28,16 @@ print(df.describe())
 # DATA PREPROCESSING AND TYPE CONVERSION
 # --------------------------------------------------
 
-# Remove leading and trailing spaces from genre values
-df['genre'] = df['genre'].str.strip()
-
-# Standardize genre capitalization for consistency
-df['genre'] = df['genre'].str.title()
+# Clean and standardize genre values
+df['genre'] = (
+    df['genre']
+    .str.strip()
+    .str.strip("[]")
+    .str.replace("'", "")
+    .str.replace('"', '')
+    .str.strip()
+    .str.title()
+)
 
 # Convert numerical columns to appropriate numeric data types
 # Invalid values are converted to NaN for further handling
@@ -209,3 +214,58 @@ plt.xlabel('Number of Members (Log Scale)')
 plt.ylabel('Score')
 plt.xscale('log')
 plt.show()
+
+# --------------------------------------------------
+# FIVE OBJECTIVES OF THE ANIME DATA SCIENCE PROJECT
+# --------------------------------------------------
+
+# Objective 1: Analyze Anime Ratings
+highest_rated = df[['title', 'score']].sort_values('score', ascending=False).head(10)
+lowest_rated = df[['title', 'score']].sort_values('score', ascending=True).head(10)
+print("\nOBJECTIVE 1: Anime Rating Analysis")
+print(highest_rated)
+print(lowest_rated)
+
+# Objective 2: Study Popularity and Community Engagement
+members_score_corr = df['members'].corr(df['score'])
+popularity_score_corr = df['popularity'].corr(df['score'])
+print("\nOBJECTIVE 2: Popularity and Community Engagement")
+print("Members vs Score:", members_score_corr)
+print("Popularity vs Score:", popularity_score_corr)
+
+# Objective 3: Investigate Genre-Based Rating Patterns
+genre_df = df.copy()
+genre_df['genre'] = genre_df['genre'].str.split(', ')
+genre_df = genre_df.explode('genre')
+genre_scores = genre_df.groupby('genre')['score'].mean()
+top_genres_by_score = genre_scores.sort_values(ascending=False).head(10)
+print("\nOBJECTIVE 3: Genre-Based Rating Analysis")
+print(top_genres_by_score)
+
+# Objective 4: Examine Episode Count and Ratings
+episode_score_corr = df['episodes'].corr(df['score'])
+df['episode_group'] = pd.cut(
+    df['episodes'],
+    bins=[-1, 1, 12, 26, 100, float('inf')],
+    labels=['1 Episode', '2-12', '13-26', '27-100', '100+']
+)
+episode_group_scores = df.groupby(
+    'episode_group', observed=False
+)['score'].mean()
+print("\nOBJECTIVE 4: Episode Count and Rating Analysis")
+print("Episodes vs Score:", episode_score_corr)
+print(episode_group_scores)
+
+# Objective 5: Identify the Most Common Anime Genres
+genre_counts = df['genre'].str.split(', ').explode().value_counts()
+top_genres = genre_counts.head(10)
+print("\nOBJECTIVE 5: Most Common Anime Genres")
+print(top_genres)
+top_genres.plot(kind='bar', figsize=(8, 5))
+plt.title('Top 10 Most Common Anime Genres')
+plt.xlabel('Genre')
+plt.ylabel('Number of Anime')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
