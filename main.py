@@ -1,9 +1,17 @@
 # Anime Dataset: Data Preprocessing and Exploratory Data Analysis (EDA)
 
 # Import the required libraries
-import matplotlib.pyplot as plt
+import math
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 # --------------------------------------------------
 # LOAD THE DATASET
@@ -40,7 +48,6 @@ df['genre'] = (
 )
 
 # Convert numerical columns to appropriate numeric data types
-# Invalid values are converted to NaN for further handling
 df['episodes'] = pd.to_numeric(df['episodes'], errors='coerce')
 df['members'] = pd.to_numeric(df['members'], errors='coerce')
 df['popularity'] = pd.to_numeric(df['popularity'], errors='coerce')
@@ -269,3 +276,97 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 
+# Create rating categories
+df['rating_category'] = pd.cut(
+    df['score'],
+    bins=[0, 6, 8, 10],
+    labels=['Low', 'Medium', 'High']
+)
+
+# Select input features and target variable
+X = df[['episodes', 'members', 'popularity']]
+Y = df['rating_category']
+# Split data into training and testing sets
+
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X, Y, test_size=0.3, random_state=42
+)
+# Standardize the features
+
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# --------------------------------------------------
+# CLASSIFICATION MODELS
+# --------------------------------------------------
+
+# Logistic Regression
+# Create and train the Logistic Regression model
+model1 = LogisticRegression(max_iter=1000)
+model1.fit(X_train, Y_train)
+# Predict rating categories
+y_pred1 = model1.predict(X_test)
+# Evaluate the model
+print("Evaluation parameters for Logistic regression model")
+print("Accuracy:", accuracy_score(Y_test, y_pred1))
+print("\nConfusion Matrix:")
+print(confusion_matrix(Y_test, y_pred1))
+print("\nClassification Report:")
+print(classification_report(Y_test, y_pred1))
+
+# KNN 
+# Create and train the KNN model
+k = round(math.sqrt(len(X_train)))
+print("Recommended K:", k)
+model2 = KNeighborsClassifier(n_neighbors=107)
+model2.fit(X_train, Y_train)
+# Predict rating categories
+y_pred2 = model2.predict(X_test)
+# Evaluate the model
+print("Evaluation parameters for KNN model")
+print("Accuracy:", accuracy_score(Y_test, y_pred2))
+print("\nConfusion Matrix:")
+print(confusion_matrix(Y_test, y_pred2))
+print("\nClassification Report:")
+print(classification_report(Y_test, y_pred2))
+
+# Naive Bayes
+# Create and train the Naive Bayes model
+model3 = GaussianNB()
+model3.fit(X_train, Y_train)
+# Predict rating categories
+y_pred3 = model3.predict(X_test)
+# Evaluate the model
+print("Evaluation parameters for Naive Bayes model")
+print("Accuracy:", accuracy_score(Y_test, y_pred3))
+print("\nConfusion Matrix:")
+print(confusion_matrix(Y_test, y_pred3))
+print("\nClassification Report:")
+print(classification_report(Y_test, y_pred3))
+
+# Decision Tree
+# Create and train the Decision Tree model
+model4 = DecisionTreeClassifier(random_state=42)
+model4.fit(X_train, Y_train)
+# Predict rating categories
+y_pred4 = model4.predict(X_test)
+# Evaluate the model
+print("Evaluation parameters for Decision Tree model")
+print("Accuracy:", accuracy_score(Y_test, y_pred4))
+print("\nConfusion Matrix:")
+print(confusion_matrix(Y_test, y_pred4))
+print("\nClassification Report:")
+print(classification_report(Y_test, y_pred4))
+# Visualisation 
+plt.figure(figsize=(16, 10))
+plot_tree(
+    model4,
+    filled=True,
+    feature_names=['Episodes (scaled)', 'Members (scaled)', 'Popularity (scaled)'],
+    class_names=['Low', 'Medium', 'High'],
+    rounded=True,
+    max_depth=3
+)
+plt.title("Decision Tree Diagram")
+plt.show()
