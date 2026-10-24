@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 # --------------------------------------------------
 
 # Load the anime dataset from the local CSV file
-df = pd.read_csv('C:/Users/jalad/Downloads/archive (4)/animes.csv')
+df = pd.read_csv('animes.csv')
 
 # Display the first five records
 print(df.head())
@@ -230,7 +230,9 @@ plt.show()
 highest_rated = df[['title', 'score']].sort_values('score', ascending=False).head(10)
 lowest_rated = df[['title', 'score']].sort_values('score', ascending=True).head(10)
 print("\nOBJECTIVE 1: Anime Rating Analysis")
+print("\nHighest Rated Anime: \n")
 print(highest_rated)
+print("\nLowest Rated Anime: \n")
 print(lowest_rated)
 
 # Objective 2: Study Popularity and Community Engagement
@@ -301,7 +303,7 @@ X_test = scaler.transform(X_test)
 # CLASSIFICATION MODELS
 # --------------------------------------------------
 
-# Logistic Regression
+# CLASSIFICATION MODEL - 1 : Logistic Regression
 # Create and train the Logistic Regression model
 model1 = LogisticRegression(max_iter=1000)
 model1.fit(X_train, Y_train)
@@ -315,7 +317,7 @@ print(confusion_matrix(Y_test, y_pred1))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred1))
 
-# KNN 
+# CLASSIFICATION MODEL - 2 : KNN 
 # Create and train the KNN model
 k = round(math.sqrt(len(X_train)))
 print("Recommended K:", k)
@@ -331,7 +333,7 @@ print(confusion_matrix(Y_test, y_pred2))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred2))
 
-# Naive Bayes
+# CLASSIFICATION MODEL - 3 : Naive Bayes
 # Create and train the Naive Bayes model
 model3 = GaussianNB()
 model3.fit(X_train, Y_train)
@@ -345,7 +347,7 @@ print(confusion_matrix(Y_test, y_pred3))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred3))
 
-# Decision Tree
+# CLASSIFICATION MODEL - 4 : Decision Tree
 # Create and train the Decision Tree model
 model4 = DecisionTreeClassifier(random_state=42)
 model4.fit(X_train, Y_train)
