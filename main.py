@@ -18,7 +18,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 # --------------------------------------------------
 
 # Load the anime dataset from the local CSV file
-df = pd.read_csv('animes.csv')
+df = pd.read_csv('C:/Users/jalad/Downloads/archive (4)/animes.csv')
 
 # Display the first five records
 print(df.head())
@@ -369,4 +369,25 @@ plot_tree(
     max_depth=3
 )
 plt.title("Decision Tree Diagram")
+plt.show()
+
+# --------------------------------------------------
+# MODEL ACCURACY COMPARISON
+# --------------------------------------------------
+
+models=['Logisitic Regression','KNN','Naive Bayes','Decision Tree']
+accuracies=[accuracy_score(Y_test,y_pred1),
+            accuracy_score(Y_test,y_pred2),
+            accuracy_score(Y_test,y_pred3),
+            accuracy_score(Y_test,y_pred4)
+]
+# Final Plot
+plt.figure(figsize=(8,5))
+plt.bar(models,accuracies)
+plt.title('Accuracy Comparison of Classification Models')
+plt.xlabel('Machine Learning Models')
+plt.ylabel('Accuracy')
+plt.ylim(0,1)
+plt.xticks(rotation=15)
+plt.tight_layout()
 plt.show()
