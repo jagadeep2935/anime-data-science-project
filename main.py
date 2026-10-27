@@ -8,9 +8,10 @@ import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.tree import DecisionTreeClassifier,plot_tree
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 
 # --------------------------------------------------
@@ -18,7 +19,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 # --------------------------------------------------
 
 # Load the anime dataset from the local CSV file
-df = pd.read_csv('animes.csv')
+df = pd.read_csv('C:/Users/jalad/Downloads/archive (4)/animes.csv')
 
 # Display the first five records
 print(df.head())
@@ -31,6 +32,9 @@ df.info()
 
 # Display descriptive statistics for numerical columns
 print(df.describe())
+
+# Removing the unwanted columns
+df.drop(columns=['img_url', 'synopsis'], inplace=True)
 
 # --------------------------------------------------
 # DATA PREPROCESSING AND TYPE CONVERSION
@@ -72,21 +76,15 @@ df.drop_duplicates(inplace=True)
 print("\nMissing values before handling:")
 print(df.isnull().sum())
 
-# Replace missing synopsis values with 'Unknown'
-df['synopsis'] = df['synopsis'].fillna('Unknown')
+# Replace missing episode counts with the mean episode count
+df['episodes'] = df['episodes'].fillna(df['episodes'].mean())
 
-# Replace missing episode counts with the median episode count
-df['episodes'] = df['episodes'].fillna(df['episodes'].median())
+# Replace missing rankings with the mean ranking
+df['ranked'] = df['ranked'].fillna(df['ranked'].mean())
 
-# Replace missing rankings with the median ranking
-df['ranked'] = df['ranked'].fillna(df['ranked'].median())
-
-# Replace missing scores with the median score
+# Replace missing scores with the mean score
 # Note: These imputed scores are estimates, not actual ratings
-df['score'] = df['score'].fillna(df['score'].median())
-
-# Replace missing image URLs with 'Unknown'
-df['img_url'] = df['img_url'].fillna('Unknown')
+df['score'] = df['score'].fillna(df['score'].mean())
 
 # Display the number of remaining missing values after handling
 print("\nMissing values after handling:")
@@ -291,7 +289,7 @@ Y = df['rating_category']
 # Split data into training and testing sets
 
 X_train, X_test, Y_train, Y_test = train_test_split(
-    X, Y, test_size=0.3, random_state=42
+    X, Y, test_size=0.2, random_state=42,stratify=Y
 )
 # Standardize the features
 
@@ -305,13 +303,16 @@ X_test = scaler.transform(X_test)
 
 # CLASSIFICATION MODEL - 1 : Logistic Regression
 # Create and train the Logistic Regression model
-model1 = LogisticRegression(max_iter=1000)
+model1 = LogisticRegression(max_iter=1000,class_weight='balanced')
 model1.fit(X_train, Y_train)
 # Predict rating categories
 y_pred1 = model1.predict(X_test)
 # Evaluate the model
-print("Evaluation parameters for Logistic regression model")
+print("\nEvaluation parameters for Logistic regression model")
 print("Accuracy:", accuracy_score(Y_test, y_pred1))
+print("Precision:", precision_score(Y_test, y_pred1, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred1, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred1, average='macro'))
 print("\nConfusion Matrix:")
 print(confusion_matrix(Y_test, y_pred1))
 print("\nClassification Report:")
@@ -321,75 +322,123 @@ print(classification_report(Y_test, y_pred1))
 # Create and train the KNN model
 k = round(math.sqrt(len(X_train)))
 print("Recommended K:", k)
-model2 = KNeighborsClassifier(n_neighbors=107)
+model2 = KNeighborsClassifier(n_neighbors=k)
 model2.fit(X_train, Y_train)
 # Predict rating categories
 y_pred2 = model2.predict(X_test)
 # Evaluate the model
-print("Evaluation parameters for KNN model")
+print("\nEvaluation parameters for KNN model")
+print("Precision:", precision_score(Y_test, y_pred2, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred2, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred2, average='macro'))
 print("Accuracy:", accuracy_score(Y_test, y_pred2))
 print("\nConfusion Matrix:")
 print(confusion_matrix(Y_test, y_pred2))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred2))
 
-# CLASSIFICATION MODEL - 3 : Naive Bayes
-# Create and train the Naive Bayes model
-model3 = GaussianNB()
+# CLASSIFICATION MODEL - 3 : Support Vector Machine
+# Create and train the Support Vector Machine
+model3 = SVC(kernel='linear',class_weight='balanced')
 model3.fit(X_train, Y_train)
 # Predict rating categories
 y_pred3 = model3.predict(X_test)
 # Evaluate the model
-print("Evaluation parameters for Naive Bayes model")
+print("\nEvaluation parameters for Support Vector Machine")
 print("Accuracy:", accuracy_score(Y_test, y_pred3))
+print("Precision:", precision_score(Y_test, y_pred3, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred3, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred3, average='macro'))
 print("\nConfusion Matrix:")
 print(confusion_matrix(Y_test, y_pred3))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred3))
 
-# CLASSIFICATION MODEL - 4 : Decision Tree
-# Create and train the Decision Tree model
-model4 = DecisionTreeClassifier(random_state=42)
+# CLASSIFICATION MODEL - 4 : Random Forest
+# Create and train the Random Forest model
+model4 = RandomForestClassifier(random_state=42,class_weight='balanced')
 model4.fit(X_train, Y_train)
 # Predict rating categories
 y_pred4 = model4.predict(X_test)
 # Evaluate the model
-print("Evaluation parameters for Decision Tree model")
+print("\nEvaluation parameters for Random Forest model")
 print("Accuracy:", accuracy_score(Y_test, y_pred4))
+print("Precision:", precision_score(Y_test, y_pred4, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred4, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred4, average='macro'))
 print("\nConfusion Matrix:")
 print(confusion_matrix(Y_test, y_pred4))
 print("\nClassification Report:")
 print(classification_report(Y_test, y_pred4))
-# Visualisation 
-plt.figure(figsize=(16, 10))
-plot_tree(
-    model4,
-    filled=True,
-    feature_names=['Episodes (scaled)', 'Members (scaled)', 'Popularity (scaled)'],
-    class_names=['Low', 'Medium', 'High'],
-    rounded=True,
-    max_depth=3
-)
-plt.title("Decision Tree Diagram")
-plt.show()
 
 # --------------------------------------------------
 # MODEL ACCURACY COMPARISON
 # --------------------------------------------------
 
-models=['Logisitic Regression','KNN','Naive Bayes','Decision Tree']
-accuracies=[accuracy_score(Y_test,y_pred1),
-            accuracy_score(Y_test,y_pred2),
-            accuracy_score(Y_test,y_pred3),
-            accuracy_score(Y_test,y_pred4)
-]
-# Final Plot
-plt.figure(figsize=(8,5))
-plt.bar(models,accuracies)
-plt.title('Accuracy Comparison of Classification Models')
-plt.xlabel('Machine Learning Models')
-plt.ylabel('Accuracy')
-plt.ylim(0,1)
-plt.xticks(rotation=15)
-plt.tight_layout()
-plt.show()
+models = ['Logistic Regression', 'KNN','Support Vector Machine', 'Random Forest']
+
+print("\nMODEL 1: Logistic Regression")
+print("Accuracy:", accuracy_score(Y_test, y_pred1))
+print("Precision:", precision_score(Y_test, y_pred1, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred1, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred1, average='macro'))
+
+print("\nMODEL 2: KNN")
+print("Accuracy:", accuracy_score(Y_test, y_pred2))
+print("Precision:", precision_score(Y_test, y_pred2, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred2, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred2, average='macro'))
+
+print("\nMODEL 3: Support Vector Machine")
+print("Accuracy:", accuracy_score(Y_test, y_pred3))
+print("Precision:", precision_score(Y_test, y_pred3, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred3, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred3, average='macro'))
+
+print("\nMODEL 4: Random Forest")
+print("Accuracy:", accuracy_score(Y_test, y_pred4))
+print("Precision:", precision_score(Y_test, y_pred4, average='macro'))
+print("Recall:", recall_score(Y_test, y_pred4, average='macro'))
+print("F1 Score:", f1_score(Y_test, y_pred4, average='macro'))
+
+# Best fit model
+print("\nConcluding the best fit model")
+print(
+    "The linear Support Vector Machine achieved the highest macro F1 score (60.58%) with a recall of 71.19%, "
+    "accuracy of 69.00% and precision of 58.03%. KNN achieved the highest accuracy (74.80%) and precision (68.42%), "
+    "but its recall (55.84%) and macro F1 (57.49%) were lower. Logistic Regression (F1 57.50%) and "
+    "Random Forest (F1 57.27%) performed similarly to KNN. Since the classes are imbalanced, macro F1 "
+    "is a more reliable measure than accuracy, so SVM is selected as the best-fit model."
+)
+
+# --------------------------------------------------
+# KEY FINDINGS
+# --------------------------------------------------
+print("\nKEY FINDINGS")
+print(
+    "1. Popularity rank (-0.66) and members (0.39) are the strongest predictors of score; episode count is weak (0.06). "
+    "2. Mystery, Thriller and Shounen have the highest average scores, and anime with 13-26 episodes score highest (6.82). "
+    "3. Comedy, Action and Fantasy are the most common genres. "
+    "4. High-rated anime are rare (about 3.7% of the data), so accuracy alone is misleading. "
+    "5. Class balancing raised High-class recall from 0.14 to about 0.70-0.78 for the SVM and Logistic Regression models, but lowered accuracy. "
+    "6. SVM gave the best macro F1 (60.58%), while KNN gave the best accuracy (74.80%)."
+)
+
+# --------------------------------------------------
+# FINAL CONCLUSION
+# --------------------------------------------------
+print("\nFINAL CONCLUSION")
+print(
+    "Four models were used to classify anime into Low, Medium and High ratings. The linear SVM performed best "
+    "overall with the highest macro F1 score (60.58%) and the best detection of High-rated anime, while KNN had the highest accuracy (74.80%). "
+    "Performance is moderate because only three features were used and the classes are imbalanced."
+)
+
+print("\nRECOMMENDATIONS")
+print("1. Anime with a large community and better popularity rank tend to score higher.")
+print("2. Mystery, Thriller and Shounen genres are rated highest; 13-26 episode series score best.")
+print("3. Use the linear SVM to predict rating categories, especially to find potential top-rated anime.")
+print("4. Add features such as genre, studio and release year to improve results.")
+
+print("\nLIMITATION")
+print("The 404 missing scores were filled with the mean score, which may inflate the Medium class.")
