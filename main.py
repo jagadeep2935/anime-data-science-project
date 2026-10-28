@@ -374,31 +374,30 @@ print("F1 Score:", f1_score(Y_test, y_pred4, average='macro'))
 # Best fit model
 print("\nConcluding the best fit model")
 print(
-    "The linear Support Vector Machine achieved the highest macro F1 score (60.58%) with a recall of 71.19%, "
-    "accuracy of 69.00% and precision of 58.03%. KNN achieved the highest accuracy (74.80%) and precision (68.42%), "
-    "but its recall (55.84%) and macro F1 (57.49%) were lower. Logistic Regression (F1 57.50%) and "
-    "Random Forest (F1 57.27%) performed similarly to KNN. Since the classes are imbalanced, macro F1 "
+    "The linear Support Vector Machine achieved the highest macro F1 score (60.40%) with a recall of 71.07%, "
+    "accuracy of 68.72% and precision of 57.90%. KNN achieved the highest accuracy (74.47%) and precision (68.21%), "
+    "but its recall (55.75%) and macro F1 (57.30%) were lower. Logistic Regression (F1 57.39%) and "
+    "Random Forest (F1 57.16%) performed similarly to KNN. Since the classes are imbalanced, macro F1 "
     "is a more reliable measure than accuracy, so SVM is selected as the best-fit model."
 )
 
 # KEY FINDINGS
-
 print("\nKEY FINDINGS")
 print(
     "1. Popularity rank (-0.66) and members (0.39) are the strongest predictors of score; episode count is weak (0.06). "
     "2. Mystery, Thriller and Shounen have the highest average scores, and anime with 13-26 episodes score highest (6.82). "
     "3. Comedy, Action and Fantasy are the most common genres. "
     "4. High-rated anime are rare (about 3.7% of the data), so accuracy alone is misleading. "
-    "5. Class balancing raised High-class recall from 0.14 to about 0.70-0.78 for the SVM and Logistic Regression models, but lowered accuracy. "
-    "6. SVM gave the best macro F1 (60.58%), while KNN gave the best accuracy (74.80%)."
+    "5. Class balancing raised High-class recall from 0.14 to 0.70-0.78 for the SVM and Logistic Regression models, but lowered accuracy. "
+    "6. SVM gave the best macro F1 (60.40%), while KNN gave the best accuracy (74.47%)."
 )
 
 # FINAL CONCLUSION
-
 print("\nFINAL CONCLUSION")
 print(
     "Four models were used to classify anime into Low, Medium and High ratings. The linear SVM performed best "
-    "overall with the highest macro F1 score (60.58%) and the best detection of High-rated anime, while KNN had the highest accuracy (74.80%). "
+    "overall with the highest macro F1 score (60.40%) and the best balance on High-rated anime (High-class F1 0.40), "
+    "while KNN had the highest accuracy (74.47%). "
     "Performance is moderate because only three features were used and the classes are imbalanced."
 )
 
@@ -409,4 +408,4 @@ print("3. Use the linear SVM to predict rating categories, especially to find po
 print("4. Add features such as genre, studio and release year to improve results.")
 
 print("\nLIMITATION")
-print("The 404 missing scores were filled with the mean score, which may inflate the Medium class.")
+print("The 404 missing scores were filled with the median score, which may inflate the Medium class.")
