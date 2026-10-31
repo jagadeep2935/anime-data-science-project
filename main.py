@@ -16,7 +16,7 @@ from sklearn.metrics import accuracy_score, confusion_matrix, classification_rep
 
 # LOAD THE DATASET
 # Load the anime dataset from the local CSV file
-df = pd.read_csv('C:/Users/jalad/Downloads/archive (4)/animes.csv')
+df = pd.read_csv('animes.csv')
 
 # Display the first five records
 print(df.head(5))
